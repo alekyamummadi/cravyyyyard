@@ -1,0 +1,14 @@
+{
+  "name": "restaurant-platform",
+  "version": "1.0.0",
+  "description": "Full-Stack Restaurant Rating and Review Platform (MERN)",
+  "scripts": {
+    "backend": "cd backend && npm run dev",
+    "frontend": "cd frontend && npm run dev",
+    "seed": "cd backend && npm run seed",
+    "build": "cd frontend && npm run build"
+  },
+  "keywords": ["mern", "restaurant-review", "mongodb-aggregation", "rbac", "jwt"],
+  "author": "",
+  "license": "ISC"
+}

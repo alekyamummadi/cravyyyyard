@@ -1,0 +1,429 @@
+{
+  "info": {
+    "name": "Restaurant Rating & Review Platform API",
+    "_postman_id": "b3e9f4a1-8d23-4e67-91bc-restaurantplatform",
+    "description": "Comprehensive Postman API collection for the Restaurant Rating and Review Platform (MERN Stack). Covers Authentication, Customer flows, Restaurant Owner management, Administrator moderation & dashboards, and MongoDB Aggregations.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000/api",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "ownerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "customerToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleRestaurantId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleReviewId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleUserId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register Customer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"New Customer\",\n  \"email\": \"new.customer@example.com\",\n  \"password\": \"Customer@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login - Administrator",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) { pm.collectionVariables.set('adminToken', res.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@platform.com\",\n  \"password\": \"Admin@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Restaurant Owner (Mario)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) { pm.collectionVariables.set('ownerToken', res.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"owner.mario@platform.com\",\n  \"password\": \"Owner@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Login - Customer (Alex)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res.token) { pm.collectionVariables.set('customerToken', res.token); }"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"customer.alex@example.com\",\n  \"password\": \"Customer@1234\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Get Profile (Me)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Restaurants",
+      "item": [
+        {
+          "name": "Get All Restaurants",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/restaurants", "host": ["{{baseUrl}}"], "path": ["restaurants"] }
+          }
+        },
+        {
+          "name": "Search by Name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/restaurants?name=Bella",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants"],
+              "query": [{ "key": "name", "value": "Bella" }]
+            }
+          }
+        },
+        {
+          "name": "Filter by Cuisine and Location",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/restaurants?cuisine=Italian&location=New%20York",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants"],
+              "query": [
+                { "key": "cuisine", "value": "Italian" },
+                { "key": "location", "value": "New York" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Restaurant By ID (With Aggregated Rating Distribution)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/restaurants/{{sampleRestaurantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants", "{{sampleRestaurantId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Owner Assigned Restaurant",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{ownerToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/restaurants/owner/my-restaurant",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants", "owner", "my-restaurant"]
+            }
+          }
+        },
+        {
+          "name": "Create Restaurant (Admin Only)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Osteria del Sole\",\n  \"cuisine\": \"Italian\",\n  \"location\": \"Chicago\",\n  \"address\": \"100 Michigan Ave\",\n  \"phone\": \"+1 (312) 555-0987\",\n  \"openingHours\": \"12:00 PM - 10:00 PM\",\n  \"description\": \"Classic northern Italian cuisine featuring handmade tagliatelle and osso buco.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/restaurants", "host": ["{{baseUrl}}"], "path": ["restaurants"] }
+          }
+        },
+        {
+          "name": "Update Restaurant (Owner for their own, or Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{ownerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"openingHours\": \"11:00 AM - 11:00 PM\",\n  \"phone\": \"+1 (212) 555-9999\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/restaurants/{{sampleRestaurantId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants", "{{sampleRestaurantId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Reviews",
+      "item": [
+        {
+          "name": "Get Restaurant Reviews",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/restaurants/{{sampleRestaurantId}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants", "{{sampleRestaurantId}}", "reviews"]
+            }
+          }
+        },
+        {
+          "name": "Submit Valid Review (Whole number 1 to 5)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 5,\n  \"comment\": \"Absolutely outstanding experience! The food was fresh and service was prompt.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/restaurants/{{sampleRestaurantId}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants", "{{sampleRestaurantId}}", "reviews"]
+            }
+          }
+        },
+        {
+          "name": "Reject Invalid Rating (e.g. 3.5 or 6 - Returns 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 3.5,\n  \"comment\": \"Testing decimal rating rejection\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/restaurants/{{sampleRestaurantId}}/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["restaurants", "{{sampleRestaurantId}}", "reviews"]
+            }
+          }
+        },
+        {
+          "name": "Update Own Review (Customer Only)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{customerToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"rating\": 4,\n  \"comment\": \"Updated review: Tried new dishes, still very good!\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{sampleReviewId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["reviews", "{{sampleReviewId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Review (Customer for own, or Admin for moderation)",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/reviews/{{sampleReviewId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["reviews", "{{sampleReviewId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Administrator",
+      "item": [
+        {
+          "name": "Get Dashboard Statistics (Users, Restaurants, Reviews, Avg Rating)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/dashboard", "host": ["{{baseUrl}}"], "path": ["admin", "dashboard"] }
+          }
+        },
+        {
+          "name": "Get All Users with Filters",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users?role=customer",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users"],
+              "query": [{ "key": "role", "value": "customer" }]
+            }
+          }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated User Name\",\n  \"email\": \"updated.user@example.com\",\n  \"role\": \"customer\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{sampleUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{sampleUserId}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/admin/users/{{sampleUserId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "users", "{{sampleUserId}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Restaurant Owner Account",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Luigi Vanni\",\n  \"email\": \"owner.luigi@platform.com\",\n  \"password\": \"Owner@1234\",\n  \"restaurantId\": \"{{sampleRestaurantId}}\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/admin/owners", "host": ["{{baseUrl}}"], "path": ["admin", "owners"] }
+          }
+        },
+        {
+          "name": "Assign Owner to Restaurant",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": \"<USER_ID_HERE>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/restaurants/{{sampleRestaurantId}}/assign-owner",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "restaurants", "{{sampleRestaurantId}}", "assign-owner"]
+            }
+          }
+        },
+        {
+          "name": "Get All Reviews for Moderation",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{adminToken}}" }],
+            "url": { "raw": "{{baseUrl}}/admin/reviews", "host": ["{{baseUrl}}"], "path": ["admin", "reviews"] }
+          }
+        }
+      ]
+    }
+  ]
+}
