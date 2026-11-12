@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Cravy Yard
 
 Cravy Yard is my restaurant discovery and review platform project. Customers can find restaurants, share reviews, and explore South Indian food, while restaurant owners and administrators can manage listings and platform content.
@@ -162,3 +163,6 @@ npm run build
 - Restrict CORS to the frontend origins you intend to support.
 - Configure production API and frontend URLs; the local Vite proxy is for development.
 - Review authentication, access control, and environment settings for your deployment.
+=======
+# cravyyyyard
+>>>>>>> 59dd63b3bb107c1d434ae61ea2ff46c89c570deb
